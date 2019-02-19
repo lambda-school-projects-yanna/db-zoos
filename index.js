@@ -20,12 +20,12 @@ server.use(helmet());
 
 //  ============== GET Endpoints 
 
-server.get('/api/zoos', async (req, res) => {
+server.get('/api/zoos/', async (req, res) => {
   try {
-    const zoos = await db('zoos');
+    const zoos = await db('zoos')
     res.status(200).json(zoos);
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).json(error)
   }
 });
 
@@ -43,14 +43,29 @@ server.get('/api/zoos/:id', async (req, res) => {
 //  ============== POST Endpoint
 
 server.post('/api/zoos', (req, res) => {
-  db.insert(req.body)
-    .then(
-      res.status(201).json(req.body)
-    )
+  const zoo = req.body;
+  db.insert(zoo)
+    .into("zoos")
+    .then( zoo => {
+      res.status(201).json(zoo)
+    })
     .catch(() => {
       res.status(500).json({error: "we encountered an error"})
     })
+});
 
+//  ============== DELETE Endpoint
+
+server.delete('/api/zoos/:id', (req, res) => {
+  db('zoos')
+  .where({id: req.params.id})
+  .del()
+  .then(() => {
+    res.status(200).json({message: "zoo deleted"})
+  })
+  .catch(() => {
+    res.status(500).json({error: "error"})
+  })
 });
 
 
